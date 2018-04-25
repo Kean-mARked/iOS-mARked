@@ -16,7 +16,16 @@ import AWSMobileClient
 import AWSUserPoolsSignIn
 import CoreLocation
 
-class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CLLocationManagerDelegate {
+public class AppState {
+    public var message: String? = nil
+    public var longitude:Double? = nil
+    public var latitude:Double? = nil
+    public static let shared = AppState()
+    
+    
+    
+}
+class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CLLocationManagerDelegate{
     
     @IBOutlet weak var markerTextField: UITextView!
     @IBOutlet weak var markerImg: UIImageView!
@@ -25,9 +34,9 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var sceneView: ARSKView!
     
-    
+    let sceneClass = Scene()
     var myUserName = ""
-    var message:String = ""
+    var message = ""
     var location:CLLocation!
     let locationManager = CLLocationManager()
     var myLat: Double = 0
@@ -54,7 +63,7 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
     }
     
     @IBAction func SubmitMarker(_ sender: Any) {
-        message = markerTextField.text
+        AppState.shared.message = markerTextField.text
         performUIChange(didChange: false)
         createMarker()
     }
@@ -105,8 +114,12 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
             locationManager.delegate = self as CLLocationManagerDelegate
             locationManager.desiredAccuracy = kCLLocationAccuracyBest // You can change the locaiton accuary here.
             locationManager.startUpdatingLocation()
+            AppState.shared.latitude = locationManager.location?.coordinate.latitude
+            AppState.shared.longitude = locationManager.location?.coordinate.longitude
+
         }
         locationManager.requestLocation()
+      
         
         
     }
@@ -119,6 +132,7 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
         
         // Run the view's session
         sceneView.session.run(configuration)
+//        generateMarker()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -166,7 +180,7 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
         
         if text == "\n"
         {
-            message = markerTextField.text
+           AppState.shared.message = markerTextField.text
             performUIChange(didChange: false)
             createMarker()
             
@@ -228,12 +242,13 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
         if locations.first != nil {
-            myLat = (locations.first?.coordinate.latitude)!
-            myLon = (locations.first?.coordinate.longitude)!
+            AppState.shared.latitude = (locations.first?.coordinate.latitude)!
+            AppState.shared.longitude = (locations.first?.coordinate.longitude)!
             altitude = (locations.first?.altitude)!
-            generateMarker()
-            
+//            scene.generateMarker()
+
         }
+        
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -252,79 +267,107 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
      *
      */
     
-    func createMarker() {
+    func createMarker(){
         
-        client.postsUsernamePost(username: myUserName   , message: message, lat: "\(myLat)", lon: "\(myLon)").continueWith {(task:AWSTask) -> AnyObject? in
-            // creates another thread
-            print(task.result as Any)
-            return nil
-        }
+//        if let scene = SKScene(fileNamed: "Scene") {
+//           scene.createMarker()
+//            
+//        }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { // change 2 to desired number of seconds
-            if let currentFrame = self.sceneView.session.currentFrame {
-                // Create a transform with a translation of 0.2 meters in front of the camera
-                var translation = matrix_identity_float4x4
-                translation.columns.3.z = -1
-                let transform = simd_mul(currentFrame.camera.transform, translation)
-                // Add a new anchor to the session
-                let anchor = ARAnchor(transform: transform)
-                self.sceneView.session.add(anchor: anchor)
-            }
+        if let longitude = AppState.shared.longitude {
             
-        }
-    }
-    
-    func generateMarker(){
-        
-        self.group.enter()
-        client.postsGet(username: "*", radius: ".005", lat: "\(myLat)", lon: "\(myLon)").continueWith {(task:AWSTask) -> AnyObject? in // creates another thread
-            let result = task.result as! NSDictionary
-            let keys = result.allKeys as! [String]
-            
-            for key in keys{
-                
-                let arr = result[key] as? NSArray
-                for post in arr! {
-                    
-                    let dic = post as? NSDictionary
-                  
-                    for id in (dic?.allKeys)!{
-                        if self.postID.contains(id) {
-                            continue
-                        }else{
-                            //create post
-                            self.postID.add(id)
-                            self.generateAutoMarker(message: dic![id] as! String)
-                                
-                            }
-                        }
-                        
-                    }
+            if let latitude = AppState.shared.latitude {
+                client.postsUsernamePost(username: myUserName   , message: AppState.shared.message, lat: "\(latitude)", lon: "\(longitude)").continueWith {(task:AWSTask) -> AnyObject? in
+                    // creates another thread
+                    print(task.result as Any)
+                    return nil
                 }
-             return nil
-        }
-    }
-    
-    
-    func generateAutoMarker(message: String){
-       
-        self.message = message
-        if let currentFrame = self.sceneView.session.currentFrame {
-            // Create a transform with a translation of 0.2 meters in front of the camera
-            var translation = matrix_identity_float4x4
-            translation.columns.3.z = self.randomPosition()
-            translation.columns.3.y = self.randomPosition()
-//            translation.columns.3.w = 5
-            let transform = simd_mul(currentFrame.camera.transform, translation)
-            //print(transform)
-            //print(currentFrame.camera.transform)
-            // Add a new anchor to the session
-            let anchor = ARAnchor(transform: transform)
-            self.sceneView.session.add(anchor: anchor)
             }
+            
+        }
+   
+//        sceneClass.createMarker()
+//        Scene.createMarker(sceneView)
+     
     }
+    
+//    func createMarker() {
+//        
+//        client.postsUsernamePost(username: myUserName   , message: message, lat: "\(myLat)", lon: "\(myLon)").continueWith {(task:AWSTask) -> AnyObject? in
+//            // creates another thread
+//            print(task.result as Any)
+//            return nil
+//        }
+//        
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { // change 2 to desired number of seconds
+//            if let currentFrame = self.sceneView.session.currentFrame {
+//                // Create a transform with a translation of 0.2 meters in front of the camera
+//                var translation = matrix_identity_float4x4
+//                translation.columns.3.z = -1
+//                let transform = simd_mul(currentFrame.camera.transform, translation)
+//                // Add a new anchor to the session
+//                let anchor = ARAnchor(transform: transform)
+//                self.sceneView.session.add(anchor: anchor)
+//            }
+//            
+//        }
+//    }
+//    
+//    func generateMarker(){
+//        
+//        self.group.enter()
+//        client.postsGet(username: "*", radius: ".005", lat: "\(myLat)", lon: "\(myLon)").continueWith {(task:AWSTask) -> AnyObject? in // creates another thread
+//            let result = task.result as! NSDictionary
+//            let keys = result.allKeys as! [String]
+//            
+//            for key in keys{
+//                
+//                let arr = result[key] as? NSArray
+//                for post in arr! {
+//                    
+//                    let dic = post as? NSDictionary
+//                  
+//                    for id in (dic?.allKeys)!{
+//                        if self.postID.contains(id) {
+//                            continue
+//                        }else{
+//                            //create post
+//                            self.postID.add(id)
+//                            self.generateAutoMarker(message: dic![id] as! String)
+//                            print(dic![id] as! String)
+//                                
+//                            }
+//                        }
+//                        
+//                    }
+//                }
+//             return nil
+//        }
+//    }
+//    
+//    
+//    func generateAutoMarker(message: String){
+//        
+//        self.message = message
+//        
+//        if let currentFrame = self.sceneView.session.currentFrame {
+//            // Create a transform with a translation of 0.2 meters in front of the camera
+//            var translation = matrix_identity_float4x4
+//            translation.columns.3.z = self.randomPosition()
+//            print(translation.columns.3.z)
+//            translation.columns.3.y = self.randomPosition()
+//            print(translation.columns.3.y)
+//            let transform = simd_mul(currentFrame.camera.transform, translation)
+//            //print(transform)
+//            //print(currentFrame.camera.transform)
+//            // Add a new anchor to the session
+//            let anchor = ARAnchor(transform: transform)
+//            self.sceneView.session.add(anchor: anchor)
+//            }
+//    }
     
     func randomPosition() -> Float{
+        print("generating random number")
         
         return  (Float(arc4random()) / 0xFFFFFFFF) * (2.0 - (-2.0) + (-2.0))
     }
@@ -337,8 +380,7 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
         let Sprite = SKSpriteNode(texture:Texture)
         
         let myLabel = SKLabelNode(fontNamed:"Avenir Book")
-        myLabel.text =  message
-        print("message is \(message)")
+        myLabel.text =  AppState.shared.message
         myLabel.fontSize = 8
         myLabel.fontColor = UIColor.black
         myLabel.horizontalAlignmentMode = .center
