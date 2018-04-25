@@ -25,6 +25,7 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var sceneView: ARSKView!
     
+    
     var myUserName = ""
     var message:String = ""
     var location:CLLocation!
@@ -34,6 +35,8 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
     var altitude:Double = 0
     let client = MARKED_APIMARkedAPIClient.default()
     var postID = NSMutableSet ()
+    var group = DispatchGroup()
+
     
     
     
@@ -228,7 +231,7 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
             myLat = (locations.first?.coordinate.latitude)!
             myLon = (locations.first?.coordinate.longitude)!
             altitude = (locations.first?.altitude)!
-            generateAutoMarker(message: "test")
+            generateMarker()
             
         }
     }
@@ -273,38 +276,31 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
     
     func generateMarker(){
         
-        client.postsGet(username: "*", radius: ".002", lat: "\(myLat)", lon: "\(myLon)").continueWith {(task:AWSTask) -> AnyObject? in // creates another thread
+        self.group.enter()
+        client.postsGet(username: "*", radius: ".005", lat: "\(myLat)", lon: "\(myLon)").continueWith {(task:AWSTask) -> AnyObject? in // creates another thread
             let result = task.result as! NSDictionary
             let keys = result.allKeys as! [String]
             
             for key in keys{
+                
                 let arr = result[key] as? NSArray
                 for post in arr! {
-                    let dic = post as? NSDictionary
                     
+                    let dic = post as? NSDictionary
+                  
                     for id in (dic?.allKeys)!{
-                        
-                        if self.postID.contains(id){
+                        if self.postID.contains(id) {
                             continue
                         }else{
                             //create post
                             self.postID.add(id)
-                            print(dic![id] as! String)
-                            
-                            let group = DispatchGroup()
-                            group.enter()
-                            
-                            
-                            group.notify(queue: .main) {
-                                print("printing allUserPosts in group code")
-                                self.generateAutoMarker(message: dic![id] as! String)
+                            self.generateAutoMarker(message: dic![id] as! String)
                                 
                             }
                         }
                         
                     }
                 }
-            }
              return nil
         }
     }
@@ -312,22 +308,20 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
     
     func generateAutoMarker(message: String){
        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { // change 2 to desired number of seconds
+        self.message = message
         if let currentFrame = self.sceneView.session.currentFrame {
             // Create a transform with a translation of 0.2 meters in front of the camera
             var translation = matrix_identity_float4x4
             translation.columns.3.z = self.randomPosition()
             translation.columns.3.y = self.randomPosition()
-            translation.columns.3.w = 5
+//            translation.columns.3.w = 5
             let transform = simd_mul(currentFrame.camera.transform, translation)
             //print(transform)
             //print(currentFrame.camera.transform)
             // Add a new anchor to the session
             let anchor = ARAnchor(transform: transform)
             self.sceneView.session.add(anchor: anchor)
-        }
-    }
-        
+            }
     }
     
     func randomPosition() -> Float{
@@ -344,7 +338,7 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
         
         let myLabel = SKLabelNode(fontNamed:"Avenir Book")
         myLabel.text =  message
-        print(message)
+        print("message is \(message)")
         myLabel.fontSize = 8
         myLabel.fontColor = UIColor.black
         myLabel.horizontalAlignmentMode = .center
