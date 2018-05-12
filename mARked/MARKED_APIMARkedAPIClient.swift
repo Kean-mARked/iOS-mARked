@@ -158,6 +158,54 @@ public class MARKED_APIMARkedAPIClient: AWSAPIGatewayClient {
      
      
      @param username 
+     
+     return type: 
+     */
+    public func followersGet(username: String?) -> AWSTask<AnyObject> {
+	    let headerParameters = [
+                   "Content-Type": "application/json",
+                   "Accept": "application/json",
+                   
+	            ]
+	    
+	    var queryParameters:[String:Any] = [:]
+	    queryParameters["username"] = username
+	    
+	    let pathParameters:[String:Any] = [:]
+	    
+	    return self.invokeHTTPRequest("GET", urlString: "/followers", pathParameters: pathParameters, queryParameters: queryParameters, headerParameters: headerParameters, body: nil, responseClass: nil)
+	}
+
+	
+    /*
+     
+     
+     @param query 
+     @param username 
+     
+     return type: 
+     */
+    public func followersQueryGet(query: String, username: String?) -> AWSTask<AnyObject> {
+	    let headerParameters = [
+                   "Content-Type": "application/json",
+                   "Accept": "application/json",
+                   
+	            ]
+	    
+	    var queryParameters:[String:Any] = [:]
+	    queryParameters["username"] = username
+	    
+	    var pathParameters:[String:Any] = [:]
+	    pathParameters["query"] = query
+	    
+	    return self.invokeHTTPRequest("GET", urlString: "/followers/{query}", pathParameters: pathParameters, queryParameters: queryParameters, headerParameters: headerParameters, body: nil, responseClass: nil)
+	}
+
+	
+    /*
+     
+     
+     @param username 
      @param radius 
      @param lat 
      @param lon 

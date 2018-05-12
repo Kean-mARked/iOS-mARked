@@ -16,32 +16,28 @@ class Scene: SKScene{
     var postID = NSMutableSet ()
     var count = 0
     var creationTime = 0.0
-    
+   
     override func didMove(to view: SKView) {
         // Setup your scene here
-        print("Did move is called!")
+       // print("Did move is called!")
         
     }
     
     override func update(_ currentTime: TimeInterval) {
-        if (currentTime > creationTime) {
-            print("current Time: \(currentTime)\nCreationTime: \(creationTime)")
-        }
+       
         // Called before each frame is rendered
         let longi = AppState.shared.longitude
         let lati = AppState.shared.latitude
         if longi != nil {
             if let longitude = longi {
                 if let latitude = lati {
-                    if (currentTime > creationTime) {
-                        print("LMAO CALLING API")
+                    if (currentTime > creationTime && AppState.shared.flagPost) {
+                   
+                       
                         creationTime = currentTime + TimeInterval(Float.random(min: 10.0, max: 16.0))
                         client.postsGet(username: "*", radius: "0.02", lat: "\(latitude)", lon: "\(longitude)").continueWith {(task:AWSTask) -> AnyObject? in // creates another thread
-                            print("API Called times: \(self.count)")
+                            print("API IS CALLED \(self.count)")
                             self.count = self.count + 1
-                            print("\n\n\n\n")
-                            print(task.result)
-                            print("\n\n\n\n")
                             if task.result != nil {
                                 let result = task.result as! NSDictionary
                                 let keys = result.allKeys as! [String]
@@ -57,14 +53,13 @@ class Scene: SKScene{
                                                 continue
                                             }else{
                                                 //create post
-                                                let str = dic![id] as! String
-                                                print("about to create node with message: \(str)")
+                                                var str = dic![id] as! String
+                                                str = "\(key):\n\(str)"
                                                 sleep(1)
-                                                print("i just woke up and the marker should have been created")
-                                                self.postID.add(id)
-                                                self.generateAutoMarker(message: dic![id] as! String)
-                                               
 
+                                                self.postID.add(id)
+                                                self.generateAutoMarker(message: str)
+                                                
                                             }
                                         }
                                         
@@ -72,7 +67,37 @@ class Scene: SKScene{
                                 }
                                 
                             }
+                            print("This is the set \(self.postID)")
                             return nil
+                        }
+                        
+                        if let username = AppState.shared.username{
+                            self.client.followersGet(username: username).continueWith {(task:AWSTask) -> [String]? in
+                                //                    print("printing task in getFriends")
+                                //                    print(task.result as Any)
+                                //                    print("finished printing the task in the api call return")
+                                //                                self.savedTask = task
+                                AppState.shared.myFollowers = []
+                                let followers = task.result as! NSDictionary
+                                let keys = followers.allKeys as! [String]
+                                for key in keys {
+                                    let arr = followers[key] as? NSArray
+                                    // print(arr![1] as Any)"
+                                    for friend in arr! {
+                                        let innerArr=friend as? NSArray
+                                        //print("result from api?: \(innerArr![1])")
+
+                                        AppState.shared.myFollowers.append(innerArr![1] as! String)
+                                        //                                    self.myFollowersLocal.append(innerArr![1] as! String)
+                                    }
+                                }
+                                //                group.leave()
+
+                                //
+
+
+                                return nil
+                            }
                         }
                     }
                     
@@ -86,26 +111,7 @@ class Scene: SKScene{
         
     }
     
-    
-    
-//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        guard let sceneView = self.view as? ARSKView else {
-//            return
-//        }
-//
-//        // Create anchor using the camera's current position
-//        if let currentFrame = sceneView.session.currentFrame {
-//
-//            // Create a transform with a translation of 0.2 meters in front of the camera
-//            var translation = matrix_identity_float4x4
-//            translation.columns.3.z = -0.2
-//            let transform = simd_mul(currentFrame.camera.transform, translation)
-//
-//            // Add a new anchor to the session
-//            let anchor = ARAnchor(transform: transform)
-//            sceneView.session.add(anchor: anchor)
-//        }
-//    }
+
     
     public func createMarker() {
         
@@ -121,6 +127,7 @@ class Scene: SKScene{
                 // Add a new anchor to the session
                 let anchor = ARAnchor(transform: transform)
                 sceneView.session.add(anchor: anchor)
+            
             }
         
     }
@@ -130,12 +137,12 @@ class Scene: SKScene{
     func generateAutoMarker(message: String){
         
        AppState.shared.message = message
-        print("FROM GENERATEMARKERCLASS          \(AppState.shared.message)")
-        
+        print(" this is the message \(AppState.shared.message)")
+       
         guard let sceneView = self.view as? ARSKView else {
             return
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { // change 2 to desired number of seconds
+       
         if let currentFrame = sceneView.session.currentFrame {
             // Create a transform with a translation of 0.2 meters in front of the camera
             var translation = matrix_identity_float4x4
@@ -148,7 +155,6 @@ class Scene: SKScene{
             // Add a new anchor to the session
             let anchor = ARAnchor(transform: transform)
             sceneView.session.add(anchor: anchor)
-            }
         }
     }
 }

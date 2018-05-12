@@ -14,7 +14,6 @@
 		D2549F3620852CA5002A54DF /* AWSCognitoIdentityProviderASF.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2549F3520852CA5002A54DF /* AWSCognitoIdentityProviderASF.framework */; };
 		D2549F3820852CA5002A54DF /* AWSMobileClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2549F3720852CA5002A54DF /* AWSMobileClient.framework */; };
 		D2549F3A20852CA5002A54DF /* AWSUserPoolsSignIn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2549F3920852CA5002A54DF /* AWSUserPoolsSignIn.framework */; };
-		D2549F4020853763002A54DF /* MARKED_APIMARkedAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2549F3E20853762002A54DF /* MARKED_APIMARkedAPIClient.swift */; };
 		D2549F4620853904002A54DF /* LoginAWSViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2549F4520853904002A54DF /* LoginAWSViewController.swift */; };
 		D2549F48208539EB002A54DF /* awsconfiguration.json in Resources */ = {isa = PBXBuildFile; fileRef = D2549F47208539EB002A54DF /* awsconfiguration.json */; };
 		D2667D1C206C483900599ECD /* Pods_mARked.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2667D1D206C483900599ECD /* Pods_mARked.framework */; };
@@ -22,12 +21,15 @@
 		D26959A62069901A000FB557 /* Scene.sks in Resources */ = {isa = PBXBuildFile; fileRef = D26959A52069901A000FB557 /* Scene.sks */; };
 		D26959A82069901A000FB557 /* Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26959A72069901A000FB557 /* Scene.swift */; };
 		D26959AA2069901A000FB557 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26959A92069901A000FB557 /* ViewController.swift */; };
-		D26959AD2069901B000FB557 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D26959AB2069901B000FB557 /* Main.storyboard */; };
 		D26959AF2069901B000FB557 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D26959AE2069901B000FB557 /* Assets.xcassets */; };
 		D26959B22069901B000FB557 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D26959B02069901B000FB557 /* LaunchScreen.storyboard */; };
 		D27BE7A4206C4B2000C6C3DF /* AWSAPIGateway.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D27BE7A5206C4B2100C6C3DF /* AWSAPIGateway.framework */; };
 		D27BE7A6206C4B2500C6C3DF /* AWSCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D27BE7A7206C4B2500C6C3DF /* AWSCore.framework */; };
-		D28918A8207F04B10028974F /* MarkerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28918A7207F04B10028974F /* MarkerViewController.swift */; };
+		D2C0C74B209141C100B9CE65 /* MARKED_APIMARkedAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C0C74A209141C000B9CE65 /* MARKED_APIMARkedAPIClient.swift */; };
+		D2C0C74D2091445C00B9CE65 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D2C0C74C2091445C00B9CE65 /* Main.storyboard */; };
+		D2C0C74F209144BC00B9CE65 /* WorldViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C0C74E209144BA00B9CE65 /* WorldViewController.swift */; };
+		D2C0C751209144C800B9CE65 /* FViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C0C750209144C500B9CE65 /* FViewController.swift */; };
+		D2C0C7532091451B00B9CE65 /* FriendCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C0C7522091451A00B9CE65 /* FriendCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,7 +43,6 @@
 		D2549F3520852CA5002A54DF /* AWSCognitoIdentityProviderASF.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AWSCognitoIdentityProviderASF.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2549F3720852CA5002A54DF /* AWSMobileClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AWSMobileClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2549F3920852CA5002A54DF /* AWSUserPoolsSignIn.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AWSUserPoolsSignIn.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2549F3E20853762002A54DF /* MARKED_APIMARkedAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MARKED_APIMARkedAPIClient.swift; sourceTree = "<group>"; };
 		D2549F4520853904002A54DF /* LoginAWSViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginAWSViewController.swift; sourceTree = "<group>"; };
 		D2549F47208539EB002A54DF /* awsconfiguration.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = awsconfiguration.json; sourceTree = "<group>"; };
 		D2667D1D206C483900599ECD /* Pods_mARked.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_mARked.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -50,13 +51,16 @@
 		D26959A52069901A000FB557 /* Scene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Scene.sks; sourceTree = "<group>"; };
 		D26959A72069901A000FB557 /* Scene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scene.swift; sourceTree = "<group>"; };
 		D26959A92069901A000FB557 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		D26959AC2069901B000FB557 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D26959AE2069901B000FB557 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D26959B12069901B000FB557 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D26959B32069901B000FB557 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D27BE7A5206C4B2100C6C3DF /* AWSAPIGateway.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AWSAPIGateway.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D27BE7A7206C4B2500C6C3DF /* AWSCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AWSCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D28918A7207F04B10028974F /* MarkerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkerViewController.swift; sourceTree = "<group>"; };
+		D2C0C74A209141C000B9CE65 /* MARKED_APIMARkedAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MARKED_APIMARkedAPIClient.swift; sourceTree = "<group>"; };
+		D2C0C74C2091445C00B9CE65 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		D2C0C74E209144BA00B9CE65 /* WorldViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorldViewController.swift; sourceTree = "<group>"; };
+		D2C0C750209144C500B9CE65 /* FViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FViewController.swift; sourceTree = "<group>"; };
+		D2C0C7522091451A00B9CE65 /* FriendCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendCell.swift; sourceTree = "<group>"; };
 		D2CC1B862088242B0066C2A5 /* AWSApiGatewayBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AWSApiGatewayBridge.h; sourceTree = "<group>"; };
 		D2CC1B872088242C0066C2A5 /* Bridging_Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bridging_Header.h; sourceTree = "<group>"; };
 		D2F649972085BA26003E5796 /* ARCL.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = ARCL.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,19 +129,21 @@
 		D26959A22069901A000FB557 /* mARked */ = {
 			isa = PBXGroup;
 			children = (
-				D2549F3E20853762002A54DF /* MARKED_APIMARkedAPIClient.swift */,
 				D2CC1B862088242B0066C2A5 /* AWSApiGatewayBridge.h */,
 				D2CC1B872088242C0066C2A5 /* Bridging_Header.h */,
+				D2C0C74A209141C000B9CE65 /* MARKED_APIMARkedAPIClient.swift */,
+				D2549F47208539EB002A54DF /* awsconfiguration.json */,
 				D26959A32069901A000FB557 /* AppDelegate.swift */,
 				D26959A52069901A000FB557 /* Scene.sks */,
 				D26959A72069901A000FB557 /* Scene.swift */,
-				D2549F47208539EB002A54DF /* awsconfiguration.json */,
 				D2549F4520853904002A54DF /* LoginAWSViewController.swift */,
 				D26959A92069901A000FB557 /* ViewController.swift */,
-				D26959AB2069901B000FB557 /* Main.storyboard */,
-				D28918A7207F04B10028974F /* MarkerViewController.swift */,
-				D26959AE2069901B000FB557 /* Assets.xcassets */,
+				D2C0C74E209144BA00B9CE65 /* WorldViewController.swift */,
+				D2C0C750209144C500B9CE65 /* FViewController.swift */,
+				D2C0C7522091451A00B9CE65 /* FriendCell.swift */,
+				D2C0C74C2091445C00B9CE65 /* Main.storyboard */,
 				D26959B02069901B000FB557 /* LaunchScreen.storyboard */,
+				D26959AE2069901B000FB557 /* Assets.xcassets */,
 				D26959B32069901B000FB557 /* Info.plist */,
 			);
 			path = mARked;
@@ -215,10 +221,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2549F48208539EB002A54DF /* awsconfiguration.json in Resources */,
+				D2C0C74D2091445C00B9CE65 /* Main.storyboard in Resources */,
 				D26959A62069901A000FB557 /* Scene.sks in Resources */,
 				D26959B22069901B000FB557 /* LaunchScreen.storyboard in Resources */,
 				D26959AF2069901B000FB557 /* Assets.xcassets in Resources */,
-				D26959AD2069901B000FB557 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -300,10 +306,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2549F4620853904002A54DF /* LoginAWSViewController.swift in Sources */,
+				D2C0C751209144C800B9CE65 /* FViewController.swift in Sources */,
 				D26959AA2069901A000FB557 /* ViewController.swift in Sources */,
+				D2C0C7532091451B00B9CE65 /* FriendCell.swift in Sources */,
 				D26959A82069901A000FB557 /* Scene.swift in Sources */,
-				D28918A8207F04B10028974F /* MarkerViewController.swift in Sources */,
-				D2549F4020853763002A54DF /* MARKED_APIMARkedAPIClient.swift in Sources */,
+				D2C0C74F209144BC00B9CE65 /* WorldViewController.swift in Sources */,
+				D2C0C74B209141C100B9CE65 /* MARKED_APIMARkedAPIClient.swift in Sources */,
 				D26959A42069901A000FB557 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -311,14 +319,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		D26959AB2069901B000FB557 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				D26959AC2069901B000FB557 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		D26959B02069901B000FB557 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (

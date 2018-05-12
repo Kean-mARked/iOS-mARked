@@ -15,18 +15,24 @@ import AWSAuthUI
 import AWSMobileClient
 import AWSUserPoolsSignIn
 import CoreLocation
+import Foundation
 
 public class AppState {
     public var message: String? = nil
     public var longitude:Double? = nil
     public var latitude:Double? = nil
+    public var username:String? = nil
+    public var myFollowers: [String] = []
     public static let shared = AppState()
+    public  var flagPost = false
+    public var friendsAreReady = false
     
-    
-    
+
 }
+
 class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CLLocationManagerDelegate{
     
+    @IBOutlet weak var friendButton: UIButton!
     @IBOutlet weak var markerTextField: UITextView!
     @IBOutlet weak var markerImg: UIImageView!
     @IBOutlet weak var submitButton: UIButton!
@@ -34,20 +40,13 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var sceneView: ARSKView!
     
-    let sceneClass = Scene()
-    var myUserName = ""
-    var message = ""
     var location:CLLocation!
     let locationManager = CLLocationManager()
-    var myLat: Double = 0
-    var myLon: Double = 0
-    var altitude:Double = 0
     let client = MARKED_APIMARkedAPIClient.default()
     var postID = NSMutableSet ()
-    var group = DispatchGroup()
-
-    
-    
+    var responseUsername: String = ""
+    var myFollowersLocal: [String] = []
+    var savedTask: AWSTask =  AWSTask<AnyObject>(result: nil)
     
     /*Button Functions
      * This functions costumize the funcionality of each button.
@@ -72,10 +71,11 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
      * This functions will control the the view loads
      *
      */
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+    
         // Set the view's delegate
         sceneView.delegate = self
         // Load the SKScene from 'Scene.sks'
@@ -83,29 +83,48 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
             sceneView.presentScene(scene)
         }
         // Show statistics such as fps and node count
-        sceneView.showsFPS = true
-        sceneView.showsNodeCount = true
+//        sceneView.showsFPS = true
+//        sceneView.showsNodeCount = true
         
-        //check if user is logged in
+       
         if !AWSSignInManager.sharedInstance().isLoggedIn {
-            presentAuthUIViewController()
+//            AppState.shared.flagPost = false
+//                self.sceneView.session.pause()
+                self.presentAuthUIViewController()
         } else {
             print("User is logged in")
+            AppState.shared.flagPost = true
         }
-        
+       
         //getCurrent User info
-        AWSCognitoIdentityUserPool.default().currentUser()?.getDetails().continueWith { (task: AWSTask!) -> AnyObject? in
-            if (task.error != nil) {
-                print("Error: " + (task.error?.localizedDescription)!)
-                
-            } else {
-                //let cognitoId = task.result!
-                let response: AWSCognitoIdentityUserGetDetailsResponse? = task.result
-                //let userAttributes = response?.userAttributes
-                self.myUserName = (response?.username)!
+//        let group1 = DispatchGroup()
+//        group1.enter()
+//
+//        DispatchQueue.main.async {
+            AWSCognitoIdentityUserPool.default().currentUser()?.getDetails().continueWith { (task: AWSTask!) -> AnyObject? in
+                if (task.error != nil) {
+                    print("Error: " + (task.error?.localizedDescription)!)
+
+                } else {
+                    //let cognitoId = task.result!
+                    let response: AWSCognitoIdentityUserGetDetailsResponse? = task.result
+                    //let userAttributes = response?.userAttributes
+                    self.responseUsername = (response?.username)!
+                    //print("\n\n\nPRINTING USERNAME FROM GETDETAILS(): \(response?.username)")
+                    AppState.shared.username = (response?.username)!
+//                    group1.leave()
+                }
+                return nil
             }
-            return nil
-        }
+//        }
+//
+//         group1.notify(queue: .main) {
+//            print("USER NAME ISSSSSSS: \(self.responseUsername)")
+//            self.getFollowers()
+//        }
+//
+        print("i think getFollowers code running")
+
         self.locationManager.requestAlwaysAuthorization()
         self.locationManager.requestWhenInUseAuthorization()
         
@@ -119,20 +138,82 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
 
         }
         locationManager.requestLocation()
-      
         
         
+
     }
+
+    
+    func getFollowers() {
+        print("begin getFollowers")
+//        let group = DispatchGroup()
+//        group.enter()
+//
+//        // avoid deadlocks by not using .main queue here
+//        DispatchQueue.global(qos: .background).async {
+            self.client.followersGet(username: self.responseUsername).continueWith {(task:AWSTask) -> [String]? in
+                //                    print("printing task in getFriends")
+                //                    print(task.result as Any)
+                //                    print("finished printing the task in the api call return")
+                self.savedTask = task
+                AppState.shared.myFollowers = []
+                let followers = self.savedTask.result as! NSDictionary
+                let keys = followers.allKeys as! [String]
+                
+                for key in keys {
+                    let arr = followers[key] as? NSArray
+                    // print(arr![1] as Any)"
+                    for friend in arr! {
+                        let innerArr=friend as? NSArray
+                        //print("result from api?: \(innerArr![1])")
+                        
+                        AppState.shared.myFollowers.append(innerArr![1] as! String)
+                        self.myFollowersLocal.append(innerArr![1] as! String)
+                    }
+                }
+//                group.leave()
+
+                //
+                return nil
+            }
+//        }
+        //            concurrentQueue.async {
+        //                self.client.followersGet(username: self.responseUsername).continueWith {(task:AWSTask) -> [String]? in
+        ////                    print("printing task in getFriends")
+        ////                    print(task.result as Any)
+        ////                    print("finished printing the task in the api call return")
+        //                    self.savedTask = task
+        //                    group.leave()
+        //                    //
+        //                    return nil
+        //                }
+        //            }
+        // wait ...
+//        group.wait()
+       
+        
+        print("I want to print followers!!!!!!! trying appstate")
+        for people in AppState.shared.myFollowers {
+            print("AppState shared follower: \(people)")
+        }
+        
+        print("I want to print followers!!!!!!! trying local array")
+        for people in self.myFollowersLocal {
+            print("Local followers: \(people)")
+        }
+        
+        print("leaving getFollowers")
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         self.navigationController?.setNavigationBarHidden(true, animated: animated)
         super.viewWillAppear(animated)
-        
+       
         // Create a session configuration
         let configuration = ARWorldTrackingConfiguration()
         
         // Run the view's session
         sceneView.session.run(configuration)
-//        generateMarker()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -151,6 +232,10 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
         return true
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+//        getFollowers()
+    }
+    
     /* User Interface Control
      * This functions will control the user interface in the Main View.
      *
@@ -164,16 +249,27 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
         config.logoImage = #imageLiteral(resourceName: "MarkerLogo")
         
         // config.canCancel = false
-        
+//        let group = DispatchGroup();
+//        group.enter()
+//        group.leave()
+//        DispatchQueue.main.async {}
+//        group.notify(queue: .main) {
+//            AppState.shared.flagPost = true
+//            let configuration = ARWorldTrackingConfiguration()
+//            self.sceneView.session.run(configuration)
+//        }
         AWSAuthUIViewController.presentViewController(
             with: self.navigationController!,
             configuration: config, completionHandler: { (provider: AWSSignInProvider, error: Error?) in
                 if error == nil {
                     // SignIn succeeded.
+                    //check if user is logged in
+                    AppState.shared.flagPost = true
                 } else {
                     // end user faced error while loggin in, take any required action here.
                 }
         })
+      
     }
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
@@ -244,9 +340,6 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
         if locations.first != nil {
             AppState.shared.latitude = (locations.first?.coordinate.latitude)!
             AppState.shared.longitude = (locations.first?.coordinate.longitude)!
-            altitude = (locations.first?.altitude)!
-//            scene.generateMarker()
-
         }
         
     }
@@ -269,109 +362,25 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
     
     func createMarker(){
         
-//        if let scene = SKScene(fileNamed: "Scene") {
-//           scene.createMarker()
-//            
-//        }
-        
         if let longitude = AppState.shared.longitude {
             
             if let latitude = AppState.shared.latitude {
-                client.postsUsernamePost(username: myUserName   , message: AppState.shared.message, lat: "\(latitude)", lon: "\(longitude)").continueWith {(task:AWSTask) -> AnyObject? in
-                    // creates another thread
-                    print(task.result as Any)
-                    return nil
+                if let username =  AppState.shared.username{
+                    client.postsUsernamePost(username: username   , message: AppState.shared.message, lat: "\(latitude)", lon: "\(longitude)").continueWith {(task:AWSTask) -> AnyObject? in
+                        // creates another thread
+                        print(task.result as Any)
+                        return nil
+                    }
+                    
                 }
+                
             }
             
         }
-   
-//        sceneClass.createMarker()
-//        Scene.createMarker(sceneView)
+
      
     }
-    
-//    func createMarker() {
-//        
-//        client.postsUsernamePost(username: myUserName   , message: message, lat: "\(myLat)", lon: "\(myLon)").continueWith {(task:AWSTask) -> AnyObject? in
-//            // creates another thread
-//            print(task.result as Any)
-//            return nil
-//        }
-//        
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { // change 2 to desired number of seconds
-//            if let currentFrame = self.sceneView.session.currentFrame {
-//                // Create a transform with a translation of 0.2 meters in front of the camera
-//                var translation = matrix_identity_float4x4
-//                translation.columns.3.z = -1
-//                let transform = simd_mul(currentFrame.camera.transform, translation)
-//                // Add a new anchor to the session
-//                let anchor = ARAnchor(transform: transform)
-//                self.sceneView.session.add(anchor: anchor)
-//            }
-//            
-//        }
-//    }
-//    
-//    func generateMarker(){
-//        
-//        self.group.enter()
-//        client.postsGet(username: "*", radius: ".005", lat: "\(myLat)", lon: "\(myLon)").continueWith {(task:AWSTask) -> AnyObject? in // creates another thread
-//            let result = task.result as! NSDictionary
-//            let keys = result.allKeys as! [String]
-//            
-//            for key in keys{
-//                
-//                let arr = result[key] as? NSArray
-//                for post in arr! {
-//                    
-//                    let dic = post as? NSDictionary
-//                  
-//                    for id in (dic?.allKeys)!{
-//                        if self.postID.contains(id) {
-//                            continue
-//                        }else{
-//                            //create post
-//                            self.postID.add(id)
-//                            self.generateAutoMarker(message: dic![id] as! String)
-//                            print(dic![id] as! String)
-//                                
-//                            }
-//                        }
-//                        
-//                    }
-//                }
-//             return nil
-//        }
-//    }
-//    
-//    
-//    func generateAutoMarker(message: String){
-//        
-//        self.message = message
-//        
-//        if let currentFrame = self.sceneView.session.currentFrame {
-//            // Create a transform with a translation of 0.2 meters in front of the camera
-//            var translation = matrix_identity_float4x4
-//            translation.columns.3.z = self.randomPosition()
-//            print(translation.columns.3.z)
-//            translation.columns.3.y = self.randomPosition()
-//            print(translation.columns.3.y)
-//            let transform = simd_mul(currentFrame.camera.transform, translation)
-//            //print(transform)
-//            //print(currentFrame.camera.transform)
-//            // Add a new anchor to the session
-//            let anchor = ARAnchor(transform: transform)
-//            self.sceneView.session.add(anchor: anchor)
-//            }
-//    }
-    
-    func randomPosition() -> Float{
-        print("generating random number")
-        
-        return  (Float(arc4random()) / 0xFFFFFFFF) * (2.0 - (-2.0) + (-2.0))
-    }
-    
+ 
     func view(_ view: ARSKView, nodeFor anchor: ARAnchor) -> SKNode? {
         // Create and configure a node for the anchor added to the view's session.
         
@@ -394,23 +403,35 @@ class ViewController: UIViewController, ARSKViewDelegate, UITextViewDelegate, CL
         
     }
     
-    func showResult(task: AWSTask<AnyObject>) {
-        if let error = task.error {
-            print("Error: \(error)")
-        } else if let result = task.result {
-            if result is NSDictionary {
-                let res = result as! NSDictionary
-                print("printing keys\n\n")
-                let keys = res.allKeys as! [String]
-                print(type(of: keys))
-                print(keys)
-                //                allUsersPosts = res.object(forKey: userName) as! [String] // array<String>
-                //                print("in show results going to print posts \(allUsersPosts)")
-                print("\n\nleaving showResult task")
+    func getFriends(){
+        print("\n\nLmao Hi! getFriends() was called!\n\n")
+        
+        if let username = AppState.shared.username{
+            client.followersGet(username: username).continueWith {(task:AWSTask) -> [String]? in
+                print("printing task in getFriends")
+                print(task.result as Any)
+                let followers = task.result as! NSDictionary
+                let keys = followers.allKeys as! [String]
+                
+                for key in keys {
+                    let arr = followers[key] as? NSArray
+                    // print(arr![1] as Any)
+                    for friend in arr! {
+                        let innerArr=friend as? NSArray
+                        print(innerArr![1])
+                        AppState.shared.myFollowers.append(innerArr![1] as! String)
+                    }
+                    
+                    //print (self.myFollowers[0])
+                    //let types = type(of:friend)
+                    //print("\(types)")
+                }
+                //
+                return nil
             }
-        } else {
-            print("\n\n\nWOW WTF DID I GET BACK FROM AWS??\n\n\n")
+            
         }
+        
     }
     
     
